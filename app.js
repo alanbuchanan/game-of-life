@@ -2,38 +2,75 @@ const Main = React.createClass({
 
     getInitialState() {
         return {
-            numCols: 5,
-            numRows: 5,
-            grandArr: []
+            numCols: 50,
+            numRows: 50,
+            grandArr: [],
+            intervalId: 0,
+            interval: 1000,
+            generationsCount: 0
         }    
     },
 
     componentDidMount() {
-        // this.initBoard();
-
+        this.setRandomisedArray();
+        this.resumeBoard();
     },
 
-    clearBoard() {},
-    resumeBoard() {},
-    pauseBoard() {},
+    componentWillUnmount () {
+        clearInterval(this.state.intervalId);
+    },
+
+    clearBoard() {
+        console.log('yes')
+        clearInterval(this.state.intervalId);
+        this.setBlankArray();
+        this.setState({generationsCount: 0})
+        this.setState({intervalId: clearInterval(this.state.intervalId)})
+    },
+
+    resumeBoard() {
+        let intervalId = setInterval(this.nextGen, this.state.interval);
+        this.setState({intervalID: intervalId});
+    },
     
-
-    initBoard() {
-
+    nextGen() {
+        this.setState({generationsCount: ++this.state.generationsCount})
+        const {grandArr} = this.state;
+        let newArr = grandArr.slice();
+        newArr[32][32] = 'populated';
+        this.setState({grandArr: newArr})
     },
 
-    hello(key) {
-        console.log(key)
-        let elemToChange = document.getElementById(key);
-        $(elemToChange).attr('class', 'populated')
+    pauseBoard() {},
+
+    setRandomisedArray () {
+        let {numCols, numRows} = this.state;
+        let arr = [];
+        
+        let myArr = Date.now().toString().split('');
+        console.log(myArr)
+
+        for(let i = 0; i < numRows; i++){
+            let subArr = [];
+            for(let j = 0; j < numCols; j++){
+                if(j.toString().split('').indexOf(myArr[1]) !== -1) {
+                    subArr.push('populated')
+                } else {
+                    subArr.push('empty')
+                }
+                myArr = _.shuffle(myArr)
+            }
+            arr.push(subArr);
+        }
+        this.setState({grandArr: arr})
     },
 
-    render() {
-
+    //TODO: go through the array, evaluating each cell, and doing something with it depending on its array value
+    // Start with the `nextGen()` method because that's probably where it should be started
+    setBlankArray() {
         let {numCols, numRows} = this.state;
         
-        let grandArr = [];
-        let tds = [];
+        let arr = [];
 
         for(let i = 0; i < numRows; i++){
             let subArr = [];
@@ -41,10 +78,18 @@ const Main = React.createClass({
                 subArr.push('empty')
                 let key = i + '_' + j
             }
-            grandArr.push(subArr);
-            this.setState({grandArr: grandArr})
+            arr.push(subArr);
         }
+        this.setState({grandArr: arr})
+    },
 
+    initBoard() {
+
+        let {numCols, numRows, grandArr} = this.state;
+        const loading = grandArr.length === 0;
+        if (!loading) {
+
+        // Create HTML table
         const getTds = (i) => {
             return _.times(numCols, (j) => {
                 let key = i + '_' + j
@@ -63,16 +108,34 @@ const Main = React.createClass({
                 {getTds(i)}
             </tr>
         })
+            
+        return tableBody;
 
-        console.log(grandArr)
-        console.log('some num:', grandArr[1][4])
+        }
+    },
 
+    hello(key) {
+        console.log(key)
+        let elemToChange = document.getElementById(key);
+        $(elemToChange).attr('class', 'populated')
+        // TODO: Change array to account for a click
+    },
+
+    render() {
         return (
-            <table border="1" cellPadding="0" cellSpacing="0">
-                <tbody>
-                    {tableBody}
-                </tbody>
-            </table>
+            <div>
+                <h5>Generations: {this.state.generationsCount}</h5>
+                <hr/>
+                <button onClick={this.clearBoard}>Start</button>
+                <button>Pause</button>
+                <button>Clear</button>
+                <hr/>
+                <table border="1" cellPadding="0" cellSpacing="0">
+                    <tbody>
+                        {this.initBoard()}
+                    </tbody>
+                </table>
+            </div>
         )
     }
 })
