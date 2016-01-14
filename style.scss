@@ -1,27 +1,43 @@
 $cell-width: 10px;
-$cell-border-color: darkgray;
-$empty-cell-color: gray;
-$populated-cell-color: yellow;
-$dying-cell-color: pink;
+$body-bg-color: #A2453D;
+$empty-cell-color: #AAAAAA;
+$cell-border-color: $empty-cell-color;
+$populated-cell-color: #F6BF4F;
+$text-color: #FAF6ED;
+@import url(https://fonts.googleapis.com/css?family=VT323);
 
 @mixin prevent-blue-on-click {
-    border-collapse:collapse;
+    // border-collapse:collapse;
     cursor: pointer;
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */
     -ms-user-select: none; /* IE10+ */
+}
 
+h1, h2, h3, h4, h5, h6 {
+    color: $text-color;
+    text-align: center
+}
+
+button {
+    color: black;
 }
 
 table {
     @include prevent-blue-on-click;
+
+}
+
+body {
+    background-color: $body-bg-color;
+    font-family: 'VT323', ;
 }
 
 td {
-
     width: $cell-width;
     height: $cell-width;
+    margin: 3px;
 }
 
 td, th {
@@ -37,12 +53,10 @@ td, th {
     background-color: $populated-cell-color;
 }
 
-.dying {
-    background-color: $dying-cell-color;
+button {
+    cursor: pointer;
 }
 
-button {
-    width: 20%;
-    height: 50px;
-    cursor: pointer;
+.container {
+    width: 500px;
 }
